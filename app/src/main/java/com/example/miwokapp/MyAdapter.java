@@ -1,11 +1,15 @@
 package com.example.miwokapp;
 
+import android.media.Image;
+import android.media.MediaPlayer;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +20,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     ArrayList<Word> words = new ArrayList<Word>();
     private int mBgColor;
+
+    private MediaPlayer mediaPlayer;
 
     public MyAdapter() {}
 
@@ -41,6 +47,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
         holder.containerLayout.setBackgroundColor(mBgColor);
+
+        holder.playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(currentWord.hasAudio()){
+                    mediaPlayer = MediaPlayer.create(view.getContext(), currentWord.getAudioId());
+                    mediaPlayer.start();
+                }else {
+                    Toast.makeText(view.getContext(), R.string.audio_unavailable, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void releaseMediaPlayer(){
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     @Override
@@ -63,12 +88,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private ImageView imageView;
         private LinearLayout containerLayout;
 
+        private ImageView playButton;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             miwokTranslation = itemView.findViewById(R.id.miwok_text_view);
             defaultTranslation = itemView.findViewById(R.id.default_text_view);
             imageView = itemView.findViewById(R.id.image_view);
             containerLayout = itemView.findViewById(R.id.linear_layout);
+            playButton = itemView.findViewById(R.id.play_btn);
         }
     }
 }
